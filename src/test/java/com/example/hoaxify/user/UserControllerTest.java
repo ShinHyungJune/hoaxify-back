@@ -1,5 +1,8 @@
 package com.example.hoaxify.user;
 
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +30,12 @@ class UserControllerTest {
     @Autowired
     UserRepository userRepository;
 
+    @BeforeEach // 테스트 시작하기전에 아래 메소드를 실행
+    void setup()
+    {
+        userRepository.deleteAll(); // db 비우기
+    }
+
     private User createUser()
     {
         User user = new User();
@@ -47,6 +56,8 @@ class UserControllerTest {
         // [rootURL]/api/1.0/users에 user 데이터를 담아 post 통신을 보냄
         ResponseEntity<Object> response = testRestTemplate.postForEntity("/api/1.0/users", user, Object.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        long userCount = userRepository.count();
+
+        assertEquals(userCount,1);
     }
 }
